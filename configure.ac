@@ -19,7 +19,8 @@ AC_ARG_WITH([qt4],
     AS_HELP_STRING([--with-qt4], [Enable qt4 support]),
     if test "x$with_qt4" == xno; then
         with_qt5=yes
-    fi
+    fi,
+    with_qt5=yes
     )
 AC_ARG_WITH([qt5],
     AS_HELP_STRING([--with-qt5], [Enable qt5 support [default]]),
@@ -31,6 +32,16 @@ AC_ARG_WITH([qt5],
 AS_IF([test "x$with_qt4" = "x$with_qt5" ],
     AC_MSG_ERROR([*** Choose one of QT version ***])
     )
+
+# simulate qtchooser for debian wheezy with qt4 installed
+if test -e "/etc/os-release"; then
+    eval $(cat /etc/os-release|grep ID)
+    if test "x${ID}" == xdebian -a "x${VERSION_ID}" == x7; then
+        qtchooser() {
+            echo QTLIBDIR=$(qmake -v|tail -1|cut -d' ' -f 6)
+        }
+    fi
+fi
 
 if test "x$with_qt4" = xyes; then
     eval $(qtchooser --qt=4 --print-env)

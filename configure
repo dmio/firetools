@@ -3808,6 +3808,8 @@ if test "${with_qt4+set}" = set; then :
   withval=$with_qt4; if test "x$with_qt4" == xno; then
         with_qt5=yes
     fi
+else
+  with_qt5=yes
 
 fi
 
@@ -3824,6 +3826,16 @@ fi
 if test "x$with_qt4" = "x$with_qt5" ; then :
   as_fn_error $? "*** Choose one of QT version ***" "$LINENO" 5
 
+fi
+
+# simulate qtchooser for debian wheezy with qt4 installed
+if test -e "/etc/os-release"; then
+    eval $(cat /etc/os-release|grep ID)
+    if test "x${ID}" == xdebian -a "x${VERSION_ID}" == x7; then
+        qtchooser() {
+            echo QTLIBDIR=$(qmake -v|tail -1|cut -d' ' -f 6)
+        }
+    fi
 fi
 
 if test "x$with_qt4" = xyes; then
